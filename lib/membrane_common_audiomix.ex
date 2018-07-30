@@ -1,0 +1,80 @@
+defmodule Membrane.Common.AudioMix do
+  @moduledoc false
+
+  alias Membrane.Time
+  alias Membrane.Caps.Audio.Raw, as: Caps
+  use Membrane.Mixins.Log, tags: :membrane_element_audiomix
+  use Membrane.Helper
+
+  @doc false
+  defp clipper_factory(format) do
+    max_sample_value = Caps.sample_max(format)
+
+    if Caps.is_signed(format) do
+      min_sample_value = Caps.sample_min(format)
+
+      fn sample ->
+        cond do
+          sample > max_sample_value -> max_sample_value
+          sample < min_sample_value -> min_sample_value
+          true -> sample
+        end
+      end
+    else
+      fn sample ->
+        if sample > max_sample_value do
+          max_sample_value
+        else
+          sample
+        end
+      end
+    end
+  end
+
+  defp do_mix(samples, mix_params, acc \\ 0)
+
+  defp do_mix([], %{format: format, clipper: clipper}, acc) do
+    acc |> clipper.() |> Caps.value_to_sample(format) ~> ({:ok, sample} -> sample)
+  end
+
+  defp do_mix([h | t], %{format: format} = mix_params, acc) do
+    do_mix(t, mix_params, h |> Caps.sample_to_value(format) ~> ({:ok, v} -> acc + v))
+  end
+
+  defp mix_params(format) do
+    %{format: format, clipper: clipper_factory(format)}
+  end
+
+  defp zip_longest_binary_by(binaries, chunk_size, zipper, acc \\ []) do
+    {chunks, rests} =
+      binaries
+      |> Enum.flat_map(fn
+        <<chunk::binary-size(chunk_size)>> <> rest -> [{chunk, rest}]
+        _ -> []
+      end)
+      |> Enum.unzip()
+
+    case chunks do
+      [] -> acc |> Enum.reverse() |> IO.iodata_to_binary()
+      _ -> zip_longest_binary_by(rests, chunk_size, zipper, [zipper.(chunks) | acc])
+    end
+  end
+
+  @doc false
+  def mix(buffers, %Caps{format: format}) do
+    {:ok, sample_size} = Caps.format_to_sample_size(format)
+    t = Time.monotonic_time()
+
+    buffer =
+      buffers
+      |> zip_longest_binary_by(sample_size, fn buf -> do_mix(buf, format |> mix_params) end)
+
+    debug(
+      "mixing time: #{(Time.monotonic_time() - t) |> Time.to_milliseconds()} ms, buffer size: #{
+        byte_size(buffer)
+      }"
+    )
+
+    buffer
+  end
+end
