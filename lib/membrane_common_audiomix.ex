@@ -7,11 +7,11 @@ defmodule Membrane.Common.AudioMix do
   use Membrane.Helper
 
   @doc false
-  defp clipper_factory(format) do
-    max_sample_value = Caps.sample_max(format)
+  defp clipper_factory(caps) do
+    max_sample_value = Caps.sample_max(caps)
 
-    if Caps.is_signed(format) do
-      min_sample_value = Caps.sample_min(format)
+    if Caps.signed?(caps) do
+      min_sample_value = Caps.sample_min(caps)
 
       fn sample ->
         cond do
@@ -33,16 +33,16 @@ defmodule Membrane.Common.AudioMix do
 
   defp do_mix(samples, mix_params, acc \\ 0)
 
-  defp do_mix([], %{format: format, clipper: clipper}, acc) do
-    acc |> clipper.() |> Caps.value_to_sample(format) ~> ({:ok, sample} -> sample)
+  defp do_mix([], %{caps: caps, clipper: clipper}, acc) do
+    acc |> clipper.() |> Caps.value_to_sample(caps)
   end
 
-  defp do_mix([h | t], %{format: format} = mix_params, acc) do
-    do_mix(t, mix_params, h |> Caps.sample_to_value(format) ~> ({:ok, v} -> acc + v))
+  defp do_mix([h | t], %{caps: caps} = mix_params, acc) do
+    do_mix(t, mix_params, h |> Caps.sample_to_value(caps) ~> (v -> acc + v))
   end
 
-  defp mix_params(format) do
-    %{format: format, clipper: clipper_factory(format)}
+  defp mix_params(caps) do
+    %{caps: caps, clipper: clipper_factory(caps)}
   end
 
   defp zip_longest_binary_by(binaries, chunk_size, zipper, acc \\ []) do
@@ -61,13 +61,13 @@ defmodule Membrane.Common.AudioMix do
   end
 
   @doc false
-  def mix(buffers, %Caps{format: format}) do
-    {:ok, sample_size} = Caps.format_to_sample_size(format)
+  def mix(buffers, caps) do
+    sample_size = Caps.sample_size(caps)
     t = Time.monotonic_time()
 
     buffer =
       buffers
-      |> zip_longest_binary_by(sample_size, fn buf -> do_mix(buf, format |> mix_params) end)
+      |> zip_longest_binary_by(sample_size, fn buf -> do_mix(buf, caps |> mix_params) end)
 
     debug(
       "mixing time: #{(Time.monotonic_time() - t) |> Time.to_milliseconds()} ms, buffer size: #{
@@ -76,5 +76,15 @@ defmodule Membrane.Common.AudioMix do
     )
 
     buffer
+  end
+
+  def generate_silence(interval, caps) do
+    length =
+      interval
+      |> Caps.time_to_bytes(caps)
+      |> div(caps |> Caps.sample_size)
+    caps
+      |> Caps.sound_of_silence
+      |> String.duplicate(length)
   end
 end
