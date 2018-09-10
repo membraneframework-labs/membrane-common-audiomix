@@ -1,12 +1,13 @@
 defmodule Membrane.Common.AudioMix do
-  @moduledoc false
+  @moduledoc """
+  AudioMix is a simple module for mixing sounds
+  """
 
   alias Membrane.Time
   alias Membrane.Caps.Audio.Raw, as: Caps
   use Membrane.Mixins.Log, tags: :membrane_element_audiomix
   use Membrane.Helper
 
-  @doc false
   defp clipper_factory(caps) do
     max_sample_value = Caps.sample_max(caps)
 
@@ -60,7 +61,11 @@ defmodule Membrane.Common.AudioMix do
     end
   end
 
-  @doc false
+  @doc """
+  The only public function of the module. Gets a list of binaries of the same
+  size and returns a binary, which is the result of mixing the list
+  """
+  @spec mix([binary], Caps.t()) :: binary
   def mix(buffers, caps) do
     sample_size = Caps.sample_size(caps)
     t = Time.monotonic_time()
@@ -76,15 +81,5 @@ defmodule Membrane.Common.AudioMix do
     )
 
     buffer
-  end
-
-  def generate_silence(interval, caps) do
-    length =
-      interval
-      |> Caps.time_to_bytes(caps)
-      |> div(caps |> Caps.sample_size)
-    caps
-      |> Caps.sound_of_silence
-      |> String.duplicate(length)
   end
 end
