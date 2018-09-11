@@ -62,8 +62,8 @@ defmodule Membrane.Common.AudioMix do
   end
 
   @doc """
-  The only public function of the module. Gets a list of binaries of the same
-  size and returns a binary, which is the result of mixing the list
+  Gets a list of binaries of the same size and returns a binary,
+  which is the result of mixing the list
   """
   @spec mix([binary], Caps.t()) :: binary
   def mix(buffers, caps) do
