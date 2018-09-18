@@ -5,8 +5,11 @@ defmodule Membrane.Common.AudioMix do
 
   alias Membrane.Time
   alias Membrane.Caps.Audio.Raw, as: Caps
-  use Membrane.Mixins.Log, tags: :membrane_element_audiomix
+  use Membrane.Log, tags: :membrane_element_audiomix
   use Membrane.Helper
+
+  #@compile :native
+  #@compile {:hipe, [:verbose, :o3]}
 
   defp clipper_factory(caps) do
     max_sample_value = Caps.sample_max(caps)
@@ -74,11 +77,13 @@ defmodule Membrane.Common.AudioMix do
       buffers
       |> zip_longest_binary_by(sample_size, fn buf -> do_mix(buf, caps |> mix_params) end)
 
-    debug(
+    info(
       "mixing time: #{(Time.monotonic_time() - t) |> Time.to_milliseconds()} ms, buffer size: #{
         byte_size(buffer)
       }"
     )
+
+    info("number of buffers #{length(buffers)}")
 
     buffer
   end
