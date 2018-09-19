@@ -1,7 +1,8 @@
 %{
   "bimap": {:hex, :bimap, "0.1.1", "f0406e59f65ba903af678383d2356d0a6e59fb794adc1a7dd32bd8fabe0f028f", [:mix], [], "hexpm"},
   "bunch": {:hex, :bunch, "0.1.1", "6a010c8d7a9e52294a359cfe2fc669ce0472f7cb467c85a432994a3314732a0b", [:mix], [], "hexpm"},
-  "bundlex": {:hex, :bundlex, "0.1.2", "3ff76e4d69aab81a9a279c6c2dfdad77063ae118af9d7418f3b3c411be537610", [:mix], [{:porcelain, "~> 2.0", [hex: :porcelain, repo: "hexpm", optional: false]}], "hexpm"},
+  "bunch_native": {:hex, :bunch_native, "0.1.1", "9895b2cf5e5c6847af5de80c8d485ea9c69021a21e74c7237ab64e7a225c06c2", [:mix], [{:bundlex, "~> 0.1", [hex: :bundlex, repo: "hexpm", optional: false]}], "hexpm"},
+  "bundlex": {:hex, :bundlex, "0.1.3", "f55cce979fe656e48ae7fc4d36a90c65fce907632d65b54828388735a71b840b", [:mix], [{:porcelain, "~> 2.0", [hex: :porcelain, repo: "hexpm", optional: false]}], "hexpm"},
   "espec": {:hex, :espec, "1.6.0", "9c8256a8779b636ef6b861c03e569a631bcc2486f6621e755b3cce00d1426cab", [:mix], [{:meck, "0.8.11", [hex: :meck, repo: "hexpm", optional: false]}], "hexpm"},
   "meck": {:hex, :meck, "0.8.11", "2c39e15ec87d847da6cf69b4a1c4af3fd850ae2a272e719e0e8751a7fe54771f", [:rebar3], [], "hexpm"},
   "membrane_caps_audio_raw": {:hex, :membrane_caps_audio_raw, "0.1.0", "e56c154ac91ed42a429982120f1bd2f55ec411cf5cc4b45d39788ce792346575", [:mix], [{:bimap, "~> 0.1", [hex: :bimap, repo: "hexpm", optional: false]}, {:membrane_core, "~> 0.1", [hex: :membrane_core, repo: "hexpm", optional: false]}], "hexpm"},
@@ -10,4 +11,6 @@
   "membrane_loggers": {:hex, :membrane_loggers, "0.1.0", "76e944844a7c8cf45a2b5dd3ab6802a3c8f41a4efd823f63f4a69d9aac08230f", [:mix], [{:bundlex, "~> 0.1", [hex: :bundlex, repo: "hexpm", optional: false]}, {:membrane_common_c, "~> 0.1", [hex: :membrane_common_c, repo: "hexpm", optional: false]}, {:membrane_core, "~> 0.1", [hex: :membrane_core, repo: "hexpm", optional: false]}], "hexpm"},
   "porcelain": {:hex, :porcelain, "2.0.3", "2d77b17d1f21fed875b8c5ecba72a01533db2013bd2e5e62c6d286c029150fdc", [:mix], [], "hexpm"},
   "qex": {:hex, :qex, "0.5.0", "5a3a9becf67d4006377c4c247ffdaaa8ae5b3634a0caadb788dc24d6125068f4", [:mix], [], "hexpm"},
+  "shmex": {:git, "https://github.com/membraneframework/shmex.git", "5b7e32a6cbb94e48740eb07da01515bce22682eb", []},
+  "unifex": {:git, "https://github.com/membraneframework/unifex.git", "17b8e177aaea853df7647976107dad55fbf47bdf", []},
 }
