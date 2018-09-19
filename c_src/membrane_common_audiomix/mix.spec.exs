@@ -1,3 +1,3 @@
 module Membrane.Common.AudioMix.Native
 
-spec mix(payload) :: payload
+spec mix([payload]) :: payload

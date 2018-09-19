@@ -7,7 +7,7 @@
   "meck": {:hex, :meck, "0.8.11", "2c39e15ec87d847da6cf69b4a1c4af3fd850ae2a272e719e0e8751a7fe54771f", [:rebar3], [], "hexpm"},
   "membrane_caps_audio_raw": {:hex, :membrane_caps_audio_raw, "0.1.0", "e56c154ac91ed42a429982120f1bd2f55ec411cf5cc4b45d39788ce792346575", [:mix], [{:bimap, "~> 0.1", [hex: :bimap, repo: "hexpm", optional: false]}, {:membrane_core, "~> 0.1", [hex: :membrane_core, repo: "hexpm", optional: false]}], "hexpm"},
   "membrane_common_c": {:hex, :membrane_common_c, "0.1.0", "1ca2ca66b9244a8f08efa2d43ca56d149c91e63b198f386857ec1b25c91119ec", [:mix], [{:bundlex, "~> 0.1", [hex: :bundlex, repo: "hexpm", optional: false]}], "hexpm"},
-  "membrane_core": {:git, "git@github.com:membraneframework/membrane-core.git", "392bacf18cc68795c2f13990ef1e4b9b0da28881", [branch: "fix/dynamic_pads"]},
+  "membrane_core": {:hex, :membrane_core, "0.1.1", "720ddac3b65da8f04f60fcf7b65530a7955a6e697223da3f71b2d1b8169d8a3f", [:mix], [{:qex, "~> 0.3", [hex: :qex, repo: "hexpm", optional: false]}], "hexpm"},
   "membrane_loggers": {:hex, :membrane_loggers, "0.1.0", "76e944844a7c8cf45a2b5dd3ab6802a3c8f41a4efd823f63f4a69d9aac08230f", [:mix], [{:bundlex, "~> 0.1", [hex: :bundlex, repo: "hexpm", optional: false]}, {:membrane_common_c, "~> 0.1", [hex: :membrane_common_c, repo: "hexpm", optional: false]}, {:membrane_core, "~> 0.1", [hex: :membrane_core, repo: "hexpm", optional: false]}], "hexpm"},
   "porcelain": {:hex, :porcelain, "2.0.3", "2d77b17d1f21fed875b8c5ecba72a01533db2013bd2e5e62c6d286c029150fdc", [:mix], [], "hexpm"},
   "qex": {:hex, :qex, "0.5.0", "5a3a9becf67d4006377c4c247ffdaaa8ae5b3634a0caadb788dc24d6125068f4", [:mix], [], "hexpm"},

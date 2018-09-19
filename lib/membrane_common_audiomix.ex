@@ -5,7 +5,7 @@ defmodule Membrane.Common.AudioMix do
 
   alias Membrane.Time
   alias Membrane.Caps.Audio.Raw, as: Caps
-  use Membrane.Log, tags: :membrane_element_audiomix
+  use Membrane.Mixins.Log, tags: :membrane_element_audiomix
   use Membrane.Helper
 
   #@compile :native
