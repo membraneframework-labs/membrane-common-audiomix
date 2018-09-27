@@ -1,30 +1,77 @@
-#pragma GCC optimize("Ofast")
-#pragma GCC target("sse,sse2,sse3,ssse3,sse4")
-#pragma GCC optimize("unroll-loops")
+// #pragma GCC optimize("Ofast")
+// #pragma GCC target("sse,sse2,sse3,ssse3,sse4")
+// #pragma GCC optimize("unroll-loops")
 
 #include "mix.h"
 #include <limits.h>
 
-UNIFEX_TERM mix(UnifexEnv* env, UnifexPayload** buffers, unsigned int n) {
+void swap(int8_t* a, int8_t* b) {
+  int8_t temp = *a;
+  *a = *b;
+  *b = temp;
+}
+
+void reverse_bytes_range(int8_t* from, int8_t* to) {
+  while (from < to) {
+    swap(from, to);
+    ++from;
+    --to;
+  }
+}
+
+void reverse_bytes(int32_t* n, int bytes) {
+  int8_t* addr = (int8_t*) n;
+  reverse_bytes_range(addr, addr + bytes - 1);
+}
+
+UNIFEX_TERM mix(UnifexEnv* env, UnifexPayload** buffers, unsigned int n, int is_signed, int sample_size, int endianness) {
+  int bytes = sample_size >> 3;
   int sequence_length = buffers[0]->size;
+
   UnifexPayload* mix_payload = unifex_payload_alloc(env, buffers[0]->type, sequence_length);
-  for (int i = 0; i < sequence_length; i += 2) {
-    short* now;
-    int sum = 0;
+
+  int64_t min, max, one = 1;
+
+  if (is_signed) {
+    min = -(one << (sample_size - 1));
+    max = (one << (sample_size - 1)) - 1;
+  } else {
+    min = 0;
+    max = (one << sample_size) - 1;
+  }
+
+  int64_t highest_bit = one << (sample_size - 1);
+
+  for (int i = 0; i < sequence_length; i += bytes) {
+    int64_t sum = 0;
     for (int j = 0; j < (int) n; ++j) {
-      sum += *((short*)(buffers[j]->data + i));
+      int32_t now = 0;
+      memcpy(&now, buffers[j]->data + i, bytes);
+      if (endianness == 1) {
+        reverse_bytes(&now, bytes);
+      }
+      if (is_signed && (now & highest_bit)) {
+        now -= (one << sample_size);
+      }
+      sum += now;
     }
-    if (sum < SHRT_MIN) {
-      sum = SHRT_MIN;
+    if (sum < min) {
+      sum = min;
     }
-    if (sum > SHRT_MAX) {
-      sum = SHRT_MAX;
+    if (sum > max) {
+      sum = max;
     }
-    *((short*)(mix_payload->data + i)) = (short) sum;
+    if (is_signed && sum < 0) {
+      sum += (one << sample_size);
+    }
+    memcpy(mix_payload->data + i, &sum, bytes);
   }
   UNIFEX_TERM result = mix_result(env, mix_payload);
   unifex_payload_release_ptr(&mix_payload);
   return result;
 }
 
-void handle_destroy_state(UnifexEnv* env, State* state) {}
+void handle_destroy_state(UnifexEnv* env, State* state) {
+  UNIFEX_UNUSED(env);
+  UNIFEX_UNUSED(state);
+}
