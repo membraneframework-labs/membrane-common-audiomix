@@ -3,7 +3,7 @@ defmodule Membrane.Common.AudioMix.Native do
   alias Membrane.Time
   alias Membrane.Caps.Audio.Raw, as: Caps
 
-  use Membrane.Mixins.Log, tags: :membrane_element_audiomix
+  use Membrane.Log, tags: :membrane_element_audiomix
 
   def mix_wrapper(buffers, caps) do
     start = Time.monotonic_time()

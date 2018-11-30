@@ -5,11 +5,35 @@ defmodule Membrane.Common.AudioMix do
 
   alias Membrane.Time
   alias Membrane.Caps.Audio.Raw, as: Caps
-  use Membrane.Mixins.Log, tags: :membrane_element_audiomix
-  use Membrane.Helper
+  use Membrane.Log, tags: :membrane_element_audiomix
+  use Bunch
 
   #@compile :native
   #@compile {:hipe, [:verbose, :o3]}
+
+  @doc """
+  Gets a list of binaries of the same size containing audio samples in the same format
+  and mixes them into one buffer.
+  """
+  @spec mix([binary], Caps.t()) :: binary
+  def mix(buffers, caps) do
+    sample_size = Caps.sample_size(caps)
+    t = Time.monotonic_time()
+
+    buffer =
+      buffers
+      |> zip_longest_binary_by(sample_size, fn buf -> do_mix(buf, caps |> mix_params) end)
+
+    info(
+      "mixing time: #{(Time.monotonic_time() - t) |> Time.to_milliseconds()} ms, buffer size: #{
+        byte_size(buffer)
+      }"
+    )
+
+    info("number of buffers #{length(buffers)}")
+
+    buffer
+  end
 
   defp clipper_factory(caps) do
     max_sample_value = Caps.sample_max(caps)
@@ -62,29 +86,5 @@ defmodule Membrane.Common.AudioMix do
       [] -> acc |> Enum.reverse() |> IO.iodata_to_binary()
       _ -> zip_longest_binary_by(rests, chunk_size, zipper, [zipper.(chunks) | acc])
     end
-  end
-
-  @doc """
-  Gets a list of binaries of the same size and returns a binary,
-  which is the result of mixing the list
-  """
-  @spec mix([binary], Caps.t()) :: binary
-  def mix(buffers, caps) do
-    sample_size = Caps.sample_size(caps)
-    t = Time.monotonic_time()
-
-    buffer =
-      buffers
-      |> zip_longest_binary_by(sample_size, fn buf -> do_mix(buf, caps |> mix_params) end)
-
-    info(
-      "mixing time: #{(Time.monotonic_time() - t) |> Time.to_milliseconds()} ms, buffer size: #{
-        byte_size(buffer)
-      }"
-    )
-
-    info("number of buffers #{length(buffers)}")
-
-    buffer
   end
 end

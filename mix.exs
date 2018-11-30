@@ -6,7 +6,7 @@ defmodule MembraneCommonAudiomix.MixProject do
       app: :membrane_common_audiomix,
       compilers: [:unifex, :bundlex] ++ Mix.compilers,
       version: "0.1.0",
-      elixir: "~> 1.6",
+      elixir: "~> 1.7",
       start_permanent: Mix.env() == :prod,
       deps: deps()
     ]
@@ -20,12 +20,12 @@ defmodule MembraneCommonAudiomix.MixProject do
 
   defp deps do
     [
-      {:membrane_core, "~> 0.1"},
-      {:membrane_loggers, "~> 0.1"},
-      {:membrane_caps_audio_raw,
-       path: "/Users/vladyslav/Documents/repos/membrane-caps-audio-raw", override: true},
-      {:bundlex, "~> 0.1.3"},
-      {:unifex, github: "membraneframework/unifex"}
+      {:membrane_core, "~> 0.2.0"},
+      {:membrane_loggers, "~> 0.2.0"},
+      {:membrane_caps_audio_raw, "~> 0.1.0"},
+      {:bunch, "~> 0.1"},
+      {:bundlex, "~> 0.1.4"},
+      {:unifex, "~> 0.1.0"}
     ]
   end
 end

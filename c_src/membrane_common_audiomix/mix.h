@@ -8,6 +8,7 @@
 #include <membrane/log.h>
 #include <unifex/unifex.h>
 
-typedef struct {} State;
+typedef struct {} UnifexNifState;
+typedef UnifexNifState State;
 
 #include "_generated/mix.h"
