@@ -3,6 +3,7 @@
 #define MEMBRANE_LOG_TAG "Membrane.Common.AudioMix.Native"
 
 #include <erl_nif.h>
+#include <stdint.h>
 
 #include <membrane/membrane.h>
 #include <membrane/log.h>

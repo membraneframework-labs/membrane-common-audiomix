@@ -1,17 +1,12 @@
-// #pragma GCC optimize("Ofast")
-// #pragma GCC target("sse,sse2,sse3,ssse3,sse4")
-// #pragma GCC optimize("unroll-loops")
-
 #include "mix.h"
-#include <limits.h>
 
-void swap(int8_t* a, int8_t* b) {
+static void swap(int8_t* a, int8_t* b) {
   int8_t temp = *a;
   *a = *b;
   *b = temp;
 }
 
-void reverse_bytes_range(int8_t* from, int8_t* to) {
+static void reverse_bytes_range(int8_t* from, int8_t* to) {
   while (from < to) {
     swap(from, to);
     ++from;
@@ -19,13 +14,13 @@ void reverse_bytes_range(int8_t* from, int8_t* to) {
   }
 }
 
-void reverse_bytes(int32_t* n, int bytes) {
+static void reverse_bytes(int32_t* n, int bytes) {
   int8_t* addr = (int8_t*) n;
   reverse_bytes_range(addr, addr + bytes - 1);
 }
 
-UNIFEX_TERM mix(UnifexEnv* env, UnifexPayload** buffers, unsigned int n, int is_signed, int sample_size, int endianness) {
-  int bytes = sample_size >> 3;
+UNIFEX_TERM mix(UnifexEnv* env, UnifexPayload** buffers, unsigned int n, int is_signed, int sample_size, int is_big_endian) {
+  int bytes = sample_size / 8;
   int sequence_length = buffers[0]->size;
 
   UnifexPayload* mix_payload = unifex_payload_alloc(env, buffers[0]->type, sequence_length);
@@ -47,7 +42,7 @@ UNIFEX_TERM mix(UnifexEnv* env, UnifexPayload** buffers, unsigned int n, int is_
     for (int j = 0; j < (int) n; ++j) {
       int32_t now = 0;
       memcpy(&now, buffers[j]->data + i, bytes);
-      if (endianness == 1) {
+      if (is_big_endian == 1) {
         reverse_bytes(&now, bytes);
       }
       if (is_signed && (now & highest_bit)) {
