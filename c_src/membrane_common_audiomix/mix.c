@@ -19,11 +19,11 @@ static void reverse_bytes(int32_t* n, int bytes) {
   reverse_bytes_range(addr, addr + bytes - 1);
 }
 
-UNIFEX_TERM mix(UnifexEnv* env, UnifexPayload** buffers, unsigned int n, int is_signed, int sample_size, int is_big_endian) {
-  int bytes = sample_size / 8;
-  int sequence_length = buffers[0]->size;
+UNIFEX_TERM mix(UnifexEnv* env, UnifexPayload** tracks, unsigned int tracks_num, int is_signed, int sample_size, int is_big_endian) {
+  int bytes_in_sample = sample_size / 8;
+  int sequence_length = tracks[0]->size;
 
-  UnifexPayload* mix_payload = unifex_payload_alloc(env, buffers[0]->type, sequence_length);
+  UnifexPayload* mix_payload = unifex_payload_alloc(env, tracks[0]->type, sequence_length);
 
   int64_t min, max, one = 1;
 
@@ -35,20 +35,30 @@ UNIFEX_TERM mix(UnifexEnv* env, UnifexPayload** buffers, unsigned int n, int is_
     max = (one << sample_size) - 1;
   }
 
-  int64_t highest_bit = one << (sample_size - 1);
+  int64_t highest_bit_mask = one << (sample_size - 1);
 
-  for (int i = 0; i < sequence_length; i += bytes) {
+  for (int offset = 0; offset < sequence_length; offset += bytes_in_sample) {
     int64_t sum = 0;
-    for (int j = 0; j < (int) n; ++j) {
-      int32_t now = 0;
-      memcpy(&now, buffers[j]->data + i, bytes);
+    for (int track_index = 0; track_index < (int) tracks_num; ++track_index) {
+      int32_t now_mixed = 0;
+      memcpy(&now_mixed, tracks[track_index]->data + offset, bytes_in_sample);
+
+      // This code assumes it is run on little endian architecture
+      // If sample is in big endian, we reverse initial bytes of now_mixed
       if (is_big_endian == 1) {
-        reverse_bytes(&now, bytes);
+        reverse_bytes(&now_mixed, bytes_in_sample);
       }
-      if (is_signed && (now & highest_bit)) {
-        now -= (one << sample_size);
+      // If sample was signed, smaller than 0 and written on less than 4 bytes
+      // we need to set the most significant byte(s) of now_mixed variable to ones
+      // An example: we have signed 16-bit little endian sample of value -2
+      // Its binary representation: 1111_1110 1111_1111
+      // After copy to now_mixed:   1111_1110 1111_1111 0000_0000 0000_0000
+      // now_mixed has value of 32766.
+      // -2 written on 4 bytes is:  1111_1110 1111_1111 1111_1111 1111_1111
+      if (is_signed && (now_mixed & highest_bit_mask)) {
+        now_mixed -= (one << sample_size);
       }
-      sum += now;
+      sum += now_mixed;
     }
     if (sum < min) {
       sum = min;
@@ -59,7 +69,7 @@ UNIFEX_TERM mix(UnifexEnv* env, UnifexPayload** buffers, unsigned int n, int is_
     if (is_signed && sum < 0) {
       sum += (one << sample_size);
     }
-    memcpy(mix_payload->data + i, &sum, bytes);
+    memcpy(mix_payload->data + offset, &sum, bytes_in_sample);
   }
   UNIFEX_TERM result = mix_result(env, mix_payload);
   unifex_payload_release_ptr(&mix_payload);
