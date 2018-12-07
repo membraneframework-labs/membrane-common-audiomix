@@ -1,5 +1,6 @@
 defmodule Membrane.Common.AudioMix.NativeTest do
   use ExUnit.Case
+  import Bunch.Enum, only: [repeated: 2]
   alias Membrane.Caps.Audio.Raw
 
   @module Membrane.Common.AudioMix.Native
@@ -76,6 +77,24 @@ defmodule Membrane.Common.AudioMix.NativeTest do
     assert_clipped_max([2_147_483_640, 42], :s32be)
   end
 
+  test "Samples where the sum exceedes max value more than once while summing" do
+    assert_clipped_max(repeated(250, 8), :u8)
+    assert_clipped_max(repeated(65_500, 8), :u16le)
+    assert_clipped_max(repeated(65_500, 8), :u16be)
+    assert_clipped_max(repeated(16_777_000, 8), :u24le)
+    assert_clipped_max(repeated(16_777_000, 8), :u24be)
+    assert_clipped_max(repeated(4_294_967_000, 8), :u32le)
+    assert_clipped_max(repeated(4_294_967_000, 8), :u32be)
+
+    assert_clipped_max(repeated(120, 8), :s8)
+    assert_clipped_max(repeated(32_760, 8), :s16le)
+    assert_clipped_max(repeated(32_760, 8), :s16be)
+    assert_clipped_max(repeated(8_388_600, 8), :s24le)
+    assert_clipped_max(repeated(8_388_600, 8), :s24be)
+    assert_clipped_max(repeated(2_147_483_640, 8), :s32le)
+    assert_clipped_max(repeated(2_147_483_640, 8), :s32be)
+  end
+
   def assert_clipped_min(samples, format) do
     assert_mix(samples, format, Raw.sample_min(%Raw{format: format}))
   end
@@ -88,5 +107,15 @@ defmodule Membrane.Common.AudioMix.NativeTest do
     assert_clipped_min([-8_388_600, -42], :s24be)
     assert_clipped_min([-2_147_483_640, -42], :s32le)
     assert_clipped_min([-2_147_483_640, -42], :s32be)
+  end
+
+  test "Samples where the sum is smaller than min sample value more than once while summing" do
+    assert_clipped_min(repeated(-120, 8), :s8)
+    assert_clipped_min(repeated(-32_760, 8), :s16le)
+    assert_clipped_min(repeated(-32_760, 8), :s16be)
+    assert_clipped_min(repeated(-8_388_600, 8), :s24le)
+    assert_clipped_min(repeated(-8_388_600, 8), :s24be)
+    assert_clipped_min(repeated(-2_147_483_640, 8), :s32le)
+    assert_clipped_min(repeated(-2_147_483_640, 8), :s32be)
   end
 end
