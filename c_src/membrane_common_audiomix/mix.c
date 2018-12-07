@@ -14,8 +14,7 @@ static void reverse_bytes_range(int8_t* from, int8_t* to) {
   }
 }
 
-static void reverse_bytes(int32_t* n, int bytes) {
-  int8_t* addr = (int8_t*) n;
+static void reverse_bytes(int8_t* addr, int bytes) {
   reverse_bytes_range(addr, addr + bytes - 1);
 }
 
@@ -46,7 +45,7 @@ UNIFEX_TERM mix(UnifexEnv* env, UnifexPayload** tracks, unsigned int tracks_num,
       // This code assumes it is run on little endian architecture
       // If sample is in big endian, we reverse initial bytes of now_mixed
       if (is_big_endian == 1) {
-        reverse_bytes(&now_mixed, bytes_in_sample);
+        reverse_bytes((int8_t*) &now_mixed, bytes_in_sample);
       }
       // If sample was signed, smaller than 0 and written on less than 4 bytes
       // we need to set the most significant byte(s) of now_mixed variable to ones
@@ -68,6 +67,9 @@ UNIFEX_TERM mix(UnifexEnv* env, UnifexPayload** tracks, unsigned int tracks_num,
     }
     if (is_signed && sum < 0) {
       sum += (one << sample_size);
+    }
+    if (is_big_endian == 1) {
+      reverse_bytes((int8_t*) &sum, bytes_in_sample);
     }
     memcpy(mix_payload->data + offset, &sum, bytes_in_sample);
   }
