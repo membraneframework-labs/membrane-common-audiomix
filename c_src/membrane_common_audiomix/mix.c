@@ -34,12 +34,12 @@ UNIFEX_TERM mix(UnifexEnv* env, UnifexPayload** tracks, unsigned int tracks_num,
     max = (one << sample_size) - 1;
   }
 
-  int64_t highest_bit_mask = one << (sample_size - 1);
+  int64_t sign_bit_mask = one << (sample_size - 1);
 
   for (int offset = 0; offset < sequence_length; offset += bytes_in_sample) {
     int64_t sum = 0;
     for (int track_index = 0; track_index < (int) tracks_num; ++track_index) {
-      int32_t now_mixed = 0;
+      int64_t now_mixed = 0;
       memcpy(&now_mixed, tracks[track_index]->data + offset, bytes_in_sample);
 
       // This code assumes it is run on little endian architecture
@@ -54,7 +54,7 @@ UNIFEX_TERM mix(UnifexEnv* env, UnifexPayload** tracks, unsigned int tracks_num,
       // After copy to now_mixed:   1111_1110 1111_1111 0000_0000 0000_0000
       // now_mixed has value of 32766.
       // -2 written on 4 bytes is:  1111_1110 1111_1111 1111_1111 1111_1111
-      if (is_signed && (now_mixed & highest_bit_mask)) {
+      if (is_signed && (now_mixed & sign_bit_mask)) {
         now_mixed -= (one << sample_size);
       }
       sum += now_mixed;
@@ -64,9 +64,6 @@ UNIFEX_TERM mix(UnifexEnv* env, UnifexPayload** tracks, unsigned int tracks_num,
     }
     if (sum > max) {
       sum = max;
-    }
-    if (is_signed && sum < 0) {
-      sum += (one << sample_size);
     }
     if (is_big_endian == 1) {
       reverse_bytes((int8_t*) &sum, bytes_in_sample);
