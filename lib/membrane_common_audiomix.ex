@@ -28,16 +28,7 @@ defmodule Membrane.Common.AudioMix do
       )
 
     finish = Time.monotonic_time()
-    mixing_time = (finish - start) |> Time.to_milliseconds()
-
-    if mixing_time >= 100 do
-      warn("""
-      Mixing in NIF took #{mixing_time} ms. NIFs MUST NOT execute that long.
-      Consider mixing smaller chunks of data.
-      """)
-    else
-      debug("Mixing time: #{mixing_time} ms")
-    end
+    debug("Mixing time: #{(finish - start) |> Time.to_milliseconds()} ms")
 
     buffer
   end

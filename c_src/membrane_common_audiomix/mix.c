@@ -47,13 +47,13 @@ UNIFEX_TERM mix(UnifexEnv* env, UnifexPayload** tracks, unsigned int tracks_num,
       if (is_big_endian == 1) {
         reverse_bytes((int8_t*) &now_mixed, bytes_in_sample);
       }
-      // If sample was signed, smaller than 0 and written on less than 4 bytes
-      // we need to set the most significant byte(s) of now_mixed variable to ones
+      // If the sample is signed, smaller than 0 we need to set the most significant byte(s)
+      // of now_mixed variable to ones
       // An example: we have signed 16-bit little endian sample of value -2
-      // Its binary representation: 1111_1110 1111_1111
-      // After copy to now_mixed:   1111_1110 1111_1111 0000_0000 0000_0000
+      // Its hex representation:   0xFE 0xFF
+      // After copy to now_mixed:  0xFE 0xFF 0x00 0x00 0x00 0x00 0x00 0x00
       // now_mixed has value of 32766.
-      // -2 written on 4 bytes is:  1111_1110 1111_1111 1111_1111 1111_1111
+      // -2 written on 8 bytes is: 0xFE 0xFF 0x11 0x11 0x11 0x11 0x11 0x11
       if (is_signed && (now_mixed & sign_bit_mask)) {
         now_mixed -= (one << sample_size);
       }
