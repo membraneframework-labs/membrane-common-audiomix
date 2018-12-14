@@ -1,26 +1,26 @@
-defmodule Membrane.Common.AudioMix.NativeTest do
+defmodule Membrane.Common.AudioMixTest do
   use ExUnit.Case
   import Bunch.Enum, only: [repeated: 2]
   alias Membrane.Caps.Audio.Raw
 
-  @module Membrane.Common.AudioMix.Native
+  @module Membrane.Common.AudioMix
 
   def call_mix(samples, format) do
     caps = %Raw{format: format}
-    is_signed = Raw.signed?(caps)
-    bitsize = 8 * Raw.sample_size(caps)
-    is_big_endian = Raw.big_endian?(caps)
 
     samples
     |> Enum.map(&Raw.value_to_sample(&1, caps))
-    |> @module.mix(is_signed, bitsize, is_big_endian)
+    |> @module.mix_tracks(caps)
     |> Raw.sample_to_value(caps)
   end
 
   def assert_mix(samples, format, value) do
-    assert call_mix(samples, format) == value,
-           "Mixing samples #{inspect(samples)} in format #{inspect(format)} " <>
-             "should return #{value}"
+    result = call_mix(samples, format)
+
+    assert result == value, """
+    Mixing samples #{inspect(samples)} in format #{inspect(format)} \
+    should return #{value}, got #{result} instead.
+    """
   end
 
   def assert_mix_sum(samples, format) do

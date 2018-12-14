@@ -61,8 +61,7 @@ UNIFEX_TERM mix(UnifexEnv* env, UnifexPayload** tracks, unsigned int tracks_num,
     }
     if (sum < min) {
       sum = min;
-    }
-    if (sum > max) {
+    } else if (sum > max) {
       sum = max;
     }
     if (is_big_endian == 1) {
