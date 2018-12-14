@@ -1,7 +1,6 @@
 # Membrane.Common.AudioMix
 
-Membrane.Common.AudioMix module provides a function `mix/2` for mixing audio streams.
-The first argument is the `buffers` variable, which contains buffers. The second argument is a format.
+This package provides a module used for mixing audio tracks. See the API Reference for details.
 
 ## Installation
 
