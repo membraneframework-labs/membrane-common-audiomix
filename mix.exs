@@ -21,9 +21,9 @@ defmodule MembraneCommonAudiomix.MixProject do
   defp deps do
     [
       {:membrane_core, "~> 0.2.0"},
-      {:membrane_loggers, "~> 0.2.0"},
+      {:membrane_loggers, "~> 0.2"},
       {:membrane_caps_audio_raw, "~> 0.1"},
-      {:bunch, "~> 0.2"},
+      {:bunch, "~> 1.0"},
       {:bundlex, "~> 0.1.5"},
       {:unifex, "~> 0.2.0"}
     ]
