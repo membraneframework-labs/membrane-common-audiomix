@@ -6,6 +6,8 @@ This package provides a module used for mixing audio tracks. See the API Referen
 
 ## Installation
 
+Add the following line to your `deps` in `mix.exs`.  Run `mix deps.get`.
+
 ```elixir
 def deps do
   [
@@ -14,4 +16,10 @@ def deps do
 end
 ```
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
+## Copyright and License
+
+Copyright 2019, [Software Mansion](https://swmansion.com/?utm_source=git&utm_medium=readme&utm_campaign=membrane)
+
+[![Software Mansion](https://membraneframework.github.io/static/logo/swm_logo_readme.png)](https://swmansion.com/?utm_source=git&utm_medium=readme&utm_campaign=membrane)
+
+Licensed under the [Apache License, Version 2.0](LICENSE)
