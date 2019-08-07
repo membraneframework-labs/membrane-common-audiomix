@@ -22,7 +22,7 @@ defmodule MembraneCommonAudiomix.MixProject do
     ]
   end
 
- defp package do
+  defp package do
     [
       maintainers: ["Membrane Team"],
       licenses: ["Apache 2.0"],

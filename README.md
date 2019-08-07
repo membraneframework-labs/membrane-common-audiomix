@@ -1,5 +1,7 @@
 # Membrane.Common.AudioMix
 
+[![CircleCI](https://circleci.com/gh/membraneframework/membrane-common-audiomix.svg?style=svg)](https://circleci.com/gh/membraneframework/membrane-common-audiomix)
+
 ## Warning: This package is experimental!
 
 This package provides a module used for mixing audio tracks. See the API Reference for details.
