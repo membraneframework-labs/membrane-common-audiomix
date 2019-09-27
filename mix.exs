@@ -35,9 +35,9 @@ defmodule MembraneCommonAudiomix.MixProject do
 
   defp deps do
     [
-      {:membrane_core, "~> 0.3.0"},
-      {:membrane_loggers, "~> 0.2.0"},
-      {:membrane_caps_audio_raw, "~> 0.1.7"},
+      {:membrane_core, "~> 0.4.0"},
+      {:membrane_loggers, "~> 0.2.6"},
+      {:membrane_caps_audio_raw, "~> 0.1.8"},
       {:bunch, "~> 1.1"},
       {:bundlex, "~> 0.2.0"},
       {:unifex, "~> 0.2.0"}
